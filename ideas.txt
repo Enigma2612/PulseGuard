@@ -1,0 +1,22 @@
+ideas for powerups:
+- slow zone for bullets that breach the shield
+- bigger shield (duh)
+- multi bullet shooting from the core
+- complementary shield diametrically opposite from the main shield
+
+ 
+
+Final product vision:
+
+- Shield that protects core
+- Core can shoot bullets
+- Enemies that come to attack the core
+- Powerups for the shield/core
+- Cool visuals + unique enemies
+ 
+- Wave spawning system
+- Between waves, upgrades can be bought / Upgrades can be bullets that come, just like hollows
+- Cutscene and lore management system
+
+
+
