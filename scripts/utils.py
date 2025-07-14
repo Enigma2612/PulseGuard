@@ -63,13 +63,14 @@ def draw_aa_arc(screen, bbox: pygame.Rect, start_angle, end_angle, width, color,
 
 
 def draw_aa_arc2(screen, bbox: pygame.Rect, start_angle, end_angle, width, color, bgcolor = 'black'):
-    surf = pygame.Surface((screen.get_width()*3, screen.get_height()*3), pygame.SRCALPHA)
+    factor = 2
+    surf = pygame.Surface((screen.get_width()*factor, screen.get_height()*factor), pygame.SRCALPHA)
     surf.set_colorkey(bgcolor)
 
-    rect = bbox.inflate(bbox.width * 2, bbox.height * 2)
+    rect = bbox.inflate(bbox.width * (factor-1), bbox.height * (factor-1))
 
     rect.center = (surf.get_width()/2, surf.get_height()/2)
 
-    pygame.draw.arc(surf, color, rect, start_angle, end_angle, width*3)
+    pygame.draw.arc(surf, color, rect, start_angle, end_angle, width*factor)
     surf = pygame.transform.smoothscale(surf, (screen.get_width(), screen.get_height()))
     screen.blit(surf, (0,0))
