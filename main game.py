@@ -29,6 +29,8 @@ class GameManager:
             last_time = time.time()
             self.current_scene.run(dt)
 
+
             pygame.display.update()
+
 
 GameManager().update()  

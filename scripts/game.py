@@ -162,6 +162,5 @@ class Game:
                 self.explosion_animation.update(dt)
                 self.shield.update(keys, dt)
 
-        debug(self.core.ammo)
         # debug((len(self.enemies), self.core.health, self.explosion_animation.step))
     

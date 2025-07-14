@@ -49,10 +49,27 @@ def check_arc_collision(lower_angle, upper_angle, out_rad, in_rad, center, point
 def circle_to_circle_collision(c1, c2, r1, r2):
     return (vec(c1).distance_to(vec(c2)) <= (r1 + r2))
 
-def draw_aa_arc(surf, bbox: pygame.Rect, start_angle, end_angle, width, color, bgcolor='black'):
+def draw_aa_arc(screen, bbox: pygame.Rect, start_angle, end_angle, width, color, bgcolor='black'):
+    surf = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
     #drawing outer circle
     pygame.draw.aacircle(surf, color, bbox.center, bbox.width/2, width)
     #drawing cutting arc
     pygame.draw.arc(surf, bgcolor, bbox.inflate(5,5), end_angle, start_angle, width + 5)
     #drawing lines
     ...
+
+    surf.set_colorkey(bgcolor)
+    screen.blit(surf, (0,0))
+
+
+def draw_aa_arc2(screen, bbox: pygame.Rect, start_angle, end_angle, width, color, bgcolor = 'black'):
+    surf = pygame.Surface((screen.get_width()*3, screen.get_height()*3), pygame.SRCALPHA)
+    surf.set_colorkey(bgcolor)
+
+    rect = bbox.inflate(bbox.width * 2, bbox.height * 2)
+
+    rect.center = (surf.get_width()/2, surf.get_height()/2)
+
+    pygame.draw.arc(surf, color, rect, start_angle, end_angle, width*3)
+    surf = pygame.transform.smoothscale(surf, (screen.get_width(), screen.get_height()))
+    screen.blit(surf, (0,0))

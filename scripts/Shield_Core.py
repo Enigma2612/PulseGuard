@@ -40,11 +40,9 @@ class Shield:
         pygame.draw.arc(screen, self.color, self.bounding_rect.inflate(-2,-2), math.radians(self.lower_angle), math.radians(self.upper_angle), self.width-2)
 
     def render(self, screen):
-        if self.rendered:
-            self.smooth_render(screen)
         self.render_orbit(screen)
         if self.rendered:
-            self.crude_render(screen)
+            self.smooth_render(screen)
     def update(self, keys, dt):
         self.move(keys, dt)
         self.lower_angle, self.upper_angle = (self.angle - self.span//2) % 360, (self.angle + self.span//2) % 360
@@ -71,9 +69,19 @@ class Shield:
         rect = pygame.FRect(0,0,(self.radius + self.inner_rad), (self.radius + self.inner_rad))
         rect.center = self.cpos
         color = (100,100,100)
+        width = 4
 
-        for i in range(0,num,3):
-            pygame.draw.arc(screen, color, rect, math.radians(angle*(i-1)), math.radians(angle*i), 4)
+
+        for i in range(0, num, 3):
+            pygame.draw.arc(screen, color, rect, math.radians(angle*(i-1)), math.radians(angle*i), width)
+            # draw_aa_arc(screen, rect, math.radians(angle*(i-1)), math.radians(angle*i), width, color)
+
+        # pygame.draw.aacircle(screen, color, self.cpos, (self.radius + self.inner_rad)/2, width)
+
+        # for i in range(0,num):
+        #     if not i%3: continue
+        #     pygame.draw.arc(screen, 'black', rect.inflate(3,3), math.radians(angle*(i-1)), math.radians(angle*i), width + 4)
+        #     # draw_aa_arc(screen, rect, math.radians(angle*(i-1)), math.radians(angle*i), 4, color)
 
 class Core:
 
