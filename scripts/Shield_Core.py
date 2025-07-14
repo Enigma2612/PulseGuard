@@ -4,6 +4,7 @@ from .projectiles import *
 class Shield:
     def __init__(self, pos, rad, span, freq, img=None, width = 10):
         if not img:
+            self.image = None
             self.color = 'red'
         else:
             self.image = img
@@ -96,9 +97,11 @@ class Core:
         self.alive = True
         self.exploded = False
 
-        self.shield = shield
+        self.shields = [shield]
 
-        self.shield.cpos = self.pos
+        self.shield = self.shields[0]
+
+        for shield in self.shields: shield.cpos = self.pos
 
         self.hitbox_rad = self.size//2
 
@@ -194,12 +197,12 @@ class Core:
             self.bullets = [bullet for bullet in self.bullets if bullet.alive]
 
             self.update_ammo_rendering(dt)
+            self.update_shields()
 
     def handle_bullets(self, enemy_lis: list[BadBullet]):
         for bullet in self.bullets:
             for enemy in enemy_lis:
                 bullet.bullet_collision(enemy)
-
     
     def check_damage(self, enemy_lis: list[BadBullet]):
         if not self.enabled:
@@ -209,5 +212,26 @@ class Core:
                 self.health -= 1
                 enemy.kill()
 
+    def update_shields(self):
+        num_shields = len(self.shields)
+        angle = 360/num_shields
+        for i in range(1, num_shields):
+            self.shields[i].angle = self.shield.angle + angle*i
+        
+        print('hi')
+    
+    def add_shield(self):
+        shield = Shield(self.pos, self.shield.radius, self.shield.span, self.shield.speed, self.shield.image, self.shield.width)
+        shield.angle = self.shield.angle + 360/(len(self.shields)+1) * (len(self.shields))
+        self.shields.append(shield)
+    
+    def render_shields(self, screen):
+        for i,shield in enumerate(self.shields):
+            if not i:
+                shield.render_orbit(screen)
+            
+            if shield.rendered:
+                shield.smooth_render(screen)
+                shield.smooth_render(screen)
 
   

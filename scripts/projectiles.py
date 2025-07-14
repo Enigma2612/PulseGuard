@@ -1,6 +1,7 @@
 from .utils import *
 from .movement_functions import *
 
+
 #GoodBullet --> Shot by the core: Good
 #BadBullet --> Enemy projectile: Bad
 
@@ -62,6 +63,22 @@ class BadBullet(Bullet):
         super().__init__(pos, size, speed, move_func, health, damage, color)
         self.type = 'bad'
     
+class PowerUp(Bullet):
+    def __init__(self, pos, size, speed, move_func, health, damage, color):
+        super().__init__(pos, size, speed, move_func, health, damage, color)
+        self.type = 'powerup'
+    
+
+class ExtraShield(PowerUp):
+    def __init__(self, pos, size, speed, move_func = radially_outward, color = 'red'):
+        super().__init__(pos, size, speed, move_func, 1, 0, color)
+    
+    def impart_goodness(self, core):
+        if not self.alive:
+            return
+        
+        core.add_shield()
+
 
 def spawn_circle_enemy(pos = None, color=None):
 

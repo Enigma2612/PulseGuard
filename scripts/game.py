@@ -37,9 +37,11 @@ class Game:
                 enemy.move(enemy.pos, self.core.pos, enemy.speed, dt)
                 
         for enemy in self.enemies[:]:
-            if self.shield.circle_is_colliding(enemy.size, enemy.pos):
-                enemy.kill()
-                self.core.ammo = min(self.core.ammo + 1, self.core.max_ammo)
+
+            for shield in self.core.shields:
+                if shield.circle_is_colliding(enemy.size, enemy.pos):
+                    enemy.kill()
+                    self.core.ammo = min(self.core.ammo + 1, self.core.max_ammo)
         
         self.enemies = [enemy for enemy in self.enemies if enemy.alive]
         
@@ -99,6 +101,10 @@ class Game:
         if jkeys[pygame.K_h]:
             self.core.ammo += 1
 
+        if jkeys[pygame.K_r]:
+            self.core.add_shield()
+
+        #going back to the main menu
         if jkeys[pygame.K_ESCAPE]:
             menu = self.manager.scenes['Main Menu']
             anim = menu.center_animation
@@ -118,7 +124,10 @@ class Game:
         if not self.paused:
             #updating all
             if not self.game_over:
-                self.shield.update(keys, dt)
+
+                for shield in self.core.shields:
+                    shield.update(keys, dt)
+            
                 self.core.update(dt)
                 self.core.handle_bullets(self.enemies)
         
@@ -146,7 +155,7 @@ class Game:
 
 
         #rendering all
-        self.shield.render(self.display)
+        self.core.render_shields(self.display)
         self.render_enemies()
         self.core.render(self.display)
 
@@ -162,5 +171,6 @@ class Game:
                 self.explosion_animation.update(dt)
                 self.shield.update(keys, dt)
 
+        debug(self.core.shields.__len__())
         # debug((len(self.enemies), self.core.health, self.explosion_animation.step))
     
