@@ -218,7 +218,6 @@ class Core:
         for i in range(1, num_shields):
             self.shields[i].angle = self.shield.angle + angle*i
         
-        print('hi')
     
     def add_shield(self):
         shield = Shield(self.pos, self.shield.radius, self.shield.span, self.shield.speed, self.shield.image, self.shield.width)
