@@ -1,4 +1,4 @@
-#PulseGuard
+# PulseGuard
 
 Run the 'main game.py' file
 
