@@ -18,7 +18,7 @@ class Game:
         self.enemies : list[BadBullet]= []
 
         self.enemy_waves = [Wave({'normal':1}, 8, 2, 30, spawn_on_start = True),
-                       Wave({'normal':1}, 6, 3, 30, span_type='number', enemy_colors=['yellow`']),
+                       Wave({'normal':1}, 6, 3, 30, span_type='number', enemy_colors=['yellow']),
                        Wave({'normal':1}, 6, 2, 30, enemy_colors=['coral', 'orange']),
                        Wave({'normal':1}, 3, 4, 120, enemy_colors=['maroon', 'darkblue'])]
 

@@ -98,11 +98,11 @@ class Core:
         self.bullet_speed = 200
 
         self.shoot_rad = self.size - self.bullet_size
-        self.ammo_rad = self.size + self.bullet_size*2
+        self.ammo_rad = self.size + self.bullet_size*3
 
         self.ammo_rend_angle = 0
         self.ammo_spin_freq = 0.2
-        self.ammo_color = (0, 191, 255, 50)
+        self.ammo_color = (0, 191, 255, 80)
 
         self.shoot_angle = self.shield.angle
         self.shoot_pos = vec(self.shoot_rad * cos(self.shoot_angle), self.shoot_rad * sin(self.shoot_angle)) + self.pos
@@ -141,7 +141,7 @@ class Core:
             angle = (360 / self.max_ammo)* i + self.ammo_rend_angle
             pos = vec(self.ammo_rad * cos(angle), self.ammo_rad * sin(angle)) + self.pos
 
-            pygame.draw.aacircle(surf, self.ammo_color, pos, self.bullet_size)
+            pygame.draw.aacircle(surf, self.ammo_color, pos, round(self.bullet_size*0.75))
         
         screen.blit(surf, (0,0))
 
