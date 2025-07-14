@@ -7,6 +7,7 @@ class GameManager:
     def __init__(self):
         self.scenes = {}
         self.display = pygame.display.set_mode((W,H))
+        pygame.display.set_caption('Pulseguard')
 
         self.setup()
     
