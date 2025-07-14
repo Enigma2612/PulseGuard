@@ -49,6 +49,9 @@ class CoreExplosion(Animation):
             self.core.size -= dt / self.core_decay_time * self.og_core_size
             self.core.shoot_rad -= dt / self.core_decay_time * self.og_core_size
             self.core.bullets = []
+            self.core.ammo = 0
+            self.core.enabled = False
+            self.core.can_shoot = False
             self.shield.span -= dt / self.core_decay_time * self.og_shield_angle
 
             self.shield.span = max(self.shield.span, 2)

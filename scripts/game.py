@@ -39,6 +39,7 @@ class Game:
         for enemy in self.enemies[:]:
             if self.shield.circle_is_colliding(enemy.size, enemy.pos):
                 enemy.kill()
+                self.core.ammo = min(self.core.ammo + 1, self.core.max_ammo)
         
         self.enemies = [enemy for enemy in self.enemies if enemy.alive]
         
@@ -95,6 +96,9 @@ class Game:
         if jkeys[pygame.K_g]:
             self.core.alive = False
         
+        if jkeys[pygame.K_h]:
+            self.core.ammo += 1
+
         if jkeys[pygame.K_ESCAPE]:
             menu = self.manager.scenes['Main Menu']
             anim = menu.center_animation
@@ -158,6 +162,6 @@ class Game:
                 self.explosion_animation.update(dt)
                 self.shield.update(keys, dt)
 
-
+        debug(self.core.ammo)
         # debug((len(self.enemies), self.core.health, self.explosion_animation.step))
     

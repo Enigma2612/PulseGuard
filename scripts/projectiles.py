@@ -33,7 +33,7 @@ class Bullet:
     def bullet_collision(self, other):
         if self.circle_collision(other.pos, other.size):
             if not (other.alive and self.alive):
-                return
+                return False
             
             diff = min(other.health, self.health)
             if self.btype in ['normal']:
@@ -43,6 +43,8 @@ class Bullet:
             
             self.update_life()
             other.update_life()
+
+            return True
             
     def update_life(self):
         if self.health <= 0: self.alive = False

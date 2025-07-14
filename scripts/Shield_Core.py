@@ -98,21 +98,31 @@ class Core:
         self.bullet_speed = 200
 
         self.shoot_rad = self.size - self.bullet_size
+        self.ammo_rad = self.size + self.bullet_size*2
+
+        self.ammo_rend_angle = 0
+        self.ammo_spin_freq = 0.2
+        self.ammo_color = (0, 191, 255, 50)
 
         self.shoot_angle = self.shield.angle
         self.shoot_pos = vec(self.shoot_rad * cos(self.shoot_angle), self.shoot_rad * sin(self.shoot_angle)) + self.pos
 
-        self.ammo = 10
+        self.ammo = 0
+        self.max_ammo = 8
         self.damage = 1  #more power can destroy bigger bullets
 
         self.bullets : list[GoodBullet] = []
 
         self.enabled = True
+        self.can_shoot = True
 
     def render(self, screen):
 
         for bullet in self.bullets:
             bullet.render(screen)
+        
+        if self.can_shoot and self.enabled:
+            self.render_ammo(screen)
         
         pygame.draw.aacircle(screen, self.color, self.pos, self.size)
         self.render_shooter(screen)
@@ -125,8 +135,23 @@ class Core:
      
         draw_aa_arc(screen, bounding_box, math.radians(self.shield.lower_angle), math.radians(self.shield.upper_angle), 8, shooter_col, bgcolor=self.color)
 
+    def render_ammo(self, screen):
+        surf = pygame.Surface((W,H), pygame.SRCALPHA)
+        for i in range(self.ammo):
+            angle = (360 / self.max_ammo)* i + self.ammo_rend_angle
+            pos = vec(self.ammo_rad * cos(angle), self.ammo_rad * sin(angle)) + self.pos
+
+            pygame.draw.aacircle(surf, self.ammo_color, pos, self.bullet_size)
+        
+        screen.blit(surf, (0,0))
+
+    
+    def update_ammo_rendering(self, dt):
+        self.ammo_rend_angle += dt * self.ammo_spin_freq * 360
+        self.ammo_rend_angle = self.ammo_rend_angle % 360
+
     def shoot(self, angle = None, point = None):
-        if not self.enabled:
+        if not (self.enabled and self.can_shoot):
             return
         
         if isinstance(angle, type(None)):
@@ -140,7 +165,7 @@ class Core:
             bullet.angle = angle
             bullet.pos = point.copy()
             self.bullets.append(bullet)
-            # self.ammo -= 1
+            self.ammo -= 1
     
     def update(self, dt):
         self.check_damage(self.game.enemies)
@@ -160,10 +185,13 @@ class Core:
             
             self.bullets = [bullet for bullet in self.bullets if bullet.alive]
 
+            self.update_ammo_rendering(dt)
+
     def handle_bullets(self, enemy_lis: list[BadBullet]):
         for bullet in self.bullets:
             for enemy in enemy_lis:
                 bullet.bullet_collision(enemy)
+
     
     def check_damage(self, enemy_lis: list[BadBullet]):
         if not self.enabled:
@@ -172,4 +200,6 @@ class Core:
             if circle_to_circle_collision(enemy.pos, self.pos, enemy.size, self.hitbox_rad):
                 self.health -= 1
                 enemy.kill()
-        
+
+
+  
