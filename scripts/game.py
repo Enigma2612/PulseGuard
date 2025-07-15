@@ -18,7 +18,7 @@ class Game:
         self.enemies : list[BadBullet]= []
 
         self.enemy_waves = [Wave({'normal':1}, 8, 2, 30, spawn_on_start = True),
-                       Wave({'normal':1}, 6, 3, 30, span_type='number', enemy_colors=['yellow']),
+                       Wave({'normal':1, 'extra shield':1}, 6, 3, 30, span_type='number', enemy_colors=['yellow']),
                        Wave({'normal':1}, 6, 2, 30, enemy_colors=['coral', 'orange']),
                        Wave({'normal':1}, 3, 4, 120, enemy_colors=['maroon', 'darkblue'])]
 
@@ -31,19 +31,18 @@ class Game:
 
         self.explosion_animation = CoreExplosion(self, self.core)
     
-    def handle_enemies(self, dt):
-        for enemy in self.enemies:
+    def handle_enemies(self, lis, dt):
+        for enemy in lis:
             if enemy.move_func == track:
                 enemy.move(enemy.pos, self.core.pos, enemy.speed, dt)
                 
-        for enemy in self.enemies[:]:
-
+        for enemy in lis[:]:
             for shield in self.core.shields:
                 if shield.circle_is_colliding(enemy.size, enemy.pos):
                     enemy.kill()
-                    self.core.ammo = min(self.core.ammo + 1, self.core.max_ammo)
-        
-        self.enemies = [enemy for enemy in self.enemies if enemy.alive]
+                    if enemy.btype not in POWERUP_LIS: self.core.ammo = min(self.core.ammo + 1, self.core.max_ammo)
+
+        lis[:] = [enemy for enemy in lis if enemy.alive]
         
     def shoot_good_bullets(self, jkeys):
         if jkeys[pygame.K_SPACE]:
@@ -59,7 +58,12 @@ class Game:
         self.enemies.append(spawn_circle_enemy(pos))
 
     def render_enemies(self):
-        [enemy.render(self.display) for enemy in self.enemies]
+        [enemy.render(self.display) for enemy in self.enemies+self.powerups]
+    
+    def update_powerups(self, dt):
+        if len(self.core.shields) >= 2 and self.wave_index <= 2:
+            self.powerups = [powerup for powerup in self.powerups if powerup.btype != 'extra shield']
+        [powerup.update_glow(dt) for powerup in self.powerups if powerup.glows]
 
     def reset(self):
         self.game_over = False
@@ -70,10 +74,11 @@ class Game:
         self.core = Core(self, (W//2, H//2), 40, 1, self.shield)
 
         self.enemies : list[BadBullet]= []
+        self.powerups : list[PowerUp] = []
 
         self.enemy_waves = [Wave({'normal':1}, 8, 2, 30, spawn_on_start = True),
-                       Wave({'normal':1}, 6, 3, 30, span_type='number', enemy_colors=['yellow']),
-                       Wave({'normal':1}, 6, 2, 30, enemy_colors=['coral', 'orange']),
+                       Wave({'normal':10, 'extra shield':1}, 6, 3, 30, span_type='number', enemy_colors=['yellow'], spawn_on_start=True),
+                       Wave({'normal':8, 'extra shield':1}, 6, 2, 30, enemy_colors=['coral', 'orange']),
                        Wave({'normal':1}, 3, 4, 120, enemy_colors=['maroon', 'darkblue'])]
         
         # self.enemy_waves = [Wave({'normal':1}, 3, 4, 120, enemy_colors=['maroon', 'darkblue'])]
@@ -101,9 +106,6 @@ class Game:
         if jkeys[pygame.K_h]:
             self.core.ammo += 1
 
-        if jkeys[pygame.K_r]:
-            self.core.add_shield()
-
         #going back to the main menu
         if jkeys[pygame.K_ESCAPE]:
             menu = self.manager.scenes['Main Menu']
@@ -130,9 +132,15 @@ class Game:
             
                 self.core.update(dt)
                 self.core.handle_bullets(self.enemies)
+
+                self.update_powerups(dt)
         
             #handling enemies
-            self.handle_enemies(dt)
+            self.handle_enemies(self.enemies, dt)
+
+            #handling powerups
+            self.handle_enemies(self.powerups, dt)
+
             if not self.game_over:
                 self.shoot_good_bullets(jkeys)
 
@@ -148,7 +156,7 @@ class Game:
                     self.wave_index += 1
                     self.current_wave = self.enemy_waves[self.wave_index]
             else:
-                self.current_wave.update(dt, self.enemies)
+                self.current_wave.update(dt, self.enemies, self.powerups)
             
             if not self.core.alive:
                 self.game_over = True

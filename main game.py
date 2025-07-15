@@ -29,7 +29,7 @@ class GameManager:
             last_time = time.time()
             self.current_scene.run(dt)
 
-            # debug(1/dt if dt else 0)      #displaying fps
+            debug(1/dt if dt else 0)      #displaying fps
             pygame.display.update()
 
 

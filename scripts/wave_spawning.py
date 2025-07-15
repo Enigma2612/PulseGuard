@@ -20,19 +20,19 @@ class Wave:
 
         self.over = False
 
-    def update(self, dt, lis):
+    def update(self, dt, elis, plis):
         self.timer += dt
         if self.span_type == 'time':
             self.current_span += dt
         
         if self.timer >= self.interval:
-            self.spawn_enemies(lis)
+            self.spawn_enemies(elis, plis)
             self.timer = 0
 
         if self.current_span >= self.total_span:
             self.over = True
 
-    def spawn_enemies(self, lis):
+    def spawn_enemies(self, enemy_lis, powerup_lis):
         if self.span_type == 'number':
             spawn_num = min(self.spawn_per_interval, self.total_span - self.current_span)
             self.current_span += spawn_num
@@ -44,6 +44,7 @@ class Wave:
             enemy = random.choices(list(self.enemy_types), weights = list(self.enemy_types.values()))[0]
             pos = (W//2 + ((random.random()/2 + 0.5)*random.choice([-1,1]))*W, H//2 + ((random.random()/2 + 0.5)*random.choice([-1,1]))*H)
             if enemy == 'normal':
-                lis.append(spawn_circle_enemy(pos, color=random.choice(self.enemy_colors)))
-
+                enemy_lis.append(spawn_circle_enemy(pos, color=random.choice(self.enemy_colors)))
+            elif enemy in POWERUP_LIS:
+                powerup_lis.append(spawn_circle_enemy(pos, color=None, btype=enemy))
 

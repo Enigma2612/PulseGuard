@@ -9,6 +9,7 @@ class MainMenu:
         self.display = self.manager.display
 
         self.enemies = []
+        self.powerups = []
 
         self.game_button = pygame.FRect(0,0,200,80)
         self.game_button.center = (W//2, H*0.8)
@@ -46,6 +47,7 @@ class MainMenu:
         self.display = self.manager.display
 
         self.enemies = []
+        self.powerups = []
 
         self.game_button = pygame.FRect(0,0,200,80)
         self.game_button.center = (W//2, H*0.8)

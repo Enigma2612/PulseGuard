@@ -65,6 +65,7 @@ class CoreExplosion(Animation):
         
         self.shield.rendered = False
         self.game.enemies.clear()
+        self.game.powerups.clear()
         if not self.initiated_explosion:
             #todo: spawn exploded particles
             for i in range(self.particle_num):

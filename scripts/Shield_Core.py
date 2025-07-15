@@ -179,7 +179,7 @@ class Core:
             self.ammo -= 1
     
     def update(self, dt):
-        self.check_damage(self.game.enemies)
+        self.check_damage(self.game.enemies, self.game.powerups)
         if self.health <= 0:
             self.alive = False
         else:
@@ -197,20 +197,24 @@ class Core:
             self.bullets = [bullet for bullet in self.bullets if bullet.alive]
 
             self.update_ammo_rendering(dt)
-            self.update_shields()
 
     def handle_bullets(self, enemy_lis: list[BadBullet]):
         for bullet in self.bullets:
             for enemy in enemy_lis:
                 bullet.bullet_collision(enemy)
     
-    def check_damage(self, enemy_lis: list[BadBullet]):
+    def check_damage(self, enemy_lis: list[BadBullet], powerup_lis: list[PowerUp | ExtraShield]):
         if not self.enabled:
             return
         for enemy in enemy_lis:
             if circle_to_circle_collision(enemy.pos, self.pos, enemy.size, self.hitbox_rad):
                 self.health -= 1
                 enemy.kill()
+
+        for powerup in powerup_lis:
+            if circle_to_circle_collision(powerup.pos, self.pos, powerup.size, self.hitbox_rad):
+                powerup.impart_goodness(self)
+                powerup.kill()
 
     def update_shields(self):
         num_shields = len(self.shields)
@@ -223,6 +227,7 @@ class Core:
         shield = Shield(self.pos, self.shield.radius, self.shield.span, self.shield.speed, self.shield.image, self.shield.width)
         shield.angle = self.shield.angle + 360/(len(self.shields)+1) * (len(self.shields))
         self.shields.append(shield)
+        self.update_shields()
     
     def render_shields(self, screen):
         for i,shield in enumerate(self.shields):
@@ -230,7 +235,6 @@ class Core:
                 shield.render_orbit(screen)
             
             if shield.rendered:
-                shield.smooth_render(screen)
                 shield.smooth_render(screen)
 
   

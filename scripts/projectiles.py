@@ -15,6 +15,7 @@ class Bullet:
         self.health = health
         self.damage = damage
         self.btype = 'normal'
+        self.types = []
 
         self.alive = True
     
@@ -37,9 +38,9 @@ class Bullet:
                 return False
             
             diff = min(other.health, self.health)
-            if self.btype in ['normal']:
+            if self.btype in ['normal', 'bad']:
                 other.health -= diff
-            if other.btype in ['normal']:
+            if other.btype in ['normal', 'bad']:
                 self.health -= diff
             
             self.update_life()
@@ -49,7 +50,6 @@ class Bullet:
             
     def update_life(self):
         if self.health <= 0: self.alive = False
-
 
 class GoodBullet(Bullet):
     def __init__(self, core, health):
@@ -61,26 +61,60 @@ class GoodBullet(Bullet):
 class BadBullet(Bullet):
     def __init__(self, pos, size, speed, move_func, health, damage, color = 'green'):
         super().__init__(pos, size, speed, move_func, health, damage, color)
-        self.type = 'bad'
+        self.btype = 'bad'
     
 class PowerUp(Bullet):
     def __init__(self, pos, size, speed, move_func, health, damage, color):
         super().__init__(pos, size, speed, move_func, health, damage, color)
-        self.type = 'powerup'
+        self.btype = 'powerup'
+        self.types = ['powerup']
     
 
 class ExtraShield(PowerUp):
-    def __init__(self, pos, size, speed, move_func = radially_outward, color = 'red'):
+    def __init__(self, pos, size, speed, move_func = radially_outward, health = 1, damage = 0, color = 'red'):
         super().__init__(pos, size, speed, move_func, 1, 0, color)
-    
+        self.btype = 'extra shield'
+        self.types = ['extra shield', 'powerup']
+
+        self.glow_rad = self.size
+        self.max_glow_rad = self.size * 1.5
+        self.min_glow_rad = self.size // 2
+        self.freq = 0.5
+
+        self.amplitude = (self.max_glow_rad - self.min_glow_rad)/2
+        self.base_glow_rad = (self.max_glow_rad + self.min_glow_rad)/2
+
+        self.glows = True
+        self.glow_color = self.color
+        self.timer = 0
+
     def impart_goodness(self, core):
         if not self.alive:
             return
         
         core.add_shield()
+    
+    def render(self, screen):
+        super().render(screen)
+        self.render_glow(screen)
+    
+    def render_glow(self, screen):
+        glow_surf = pygame.Surface(((self.size + self.glow_rad)*2, (self.size + self.glow_rad)*2), pygame.SRCALPHA)
+        glow_surf.fill('black')
+        glow_surf.set_colorkey('black')
+        glow_rad = int(self.glow_rad)
+        pygame.draw.aacircle(glow_surf, self.glow_color, (glow_rad + self.size, glow_rad + self.size), (glow_rad + self.size))
+        glow_surf.set_alpha(120)
+        screen.blit(glow_surf, glow_surf.get_frect(center = self.pos))
 
+    def update_glow(self, dt):
+        self.timer += dt
+        self.glow_rad = self.base_glow_rad + self.amplitude * math.sin(2 * math.pi * self.freq * self.timer + math.pi/2)
 
-def spawn_circle_enemy(pos = None, color=None):
+TYPES_DICT = {'normal': BadBullet, 'extra shield': ExtraShield}
+POWERUP_LIS = ['extra shield', 'powerup', 'larger shield']
+
+def spawn_circle_enemy(pos = None, color=None, btype = 'normal'):
 
     if isinstance(pos, type(None)):
         if random.random() <= 0.5:
@@ -89,7 +123,7 @@ def spawn_circle_enemy(pos = None, color=None):
             pos = (random.randint(0,W), random.choice([0,H]))
     
     if color == None:
-        return BadBullet(pos, 10, enemy_base_speed, track, 1, 1)
+        return TYPES_DICT[btype](pos, 10, enemy_base_speed, track, 1, 1)
     else:
-        return BadBullet(pos, 10, enemy_base_speed, track, 1, 1, color=color)
+        return TYPES_DICT[btype](pos, 10, enemy_base_speed, track, 1, 1, color=color)
          
