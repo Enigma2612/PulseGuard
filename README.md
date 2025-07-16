@@ -14,5 +14,6 @@ I'm still working on the wave spawning mechanics, the difficulty curve feels a b
 
 Also, will probably add some lore & powerups soon..
 
-
-
+Recent update:
+--
+Added a powerup, that gives you an extra shield. Check out that code in the 'powerups' branch
